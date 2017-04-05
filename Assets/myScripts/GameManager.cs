@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
+
+public enum PlayerStates{Alive, Dead};
 
 public class GameManager : MonoBehaviour {
 
@@ -20,7 +23,7 @@ public class GameManager : MonoBehaviour {
     public Vector2 objSpawnPos;
 
     //wait seconds before spwaning objects
-    public float waitForSpawn;
+    public int waitForSpawn;
 
     //speed of spawing objects
     public float spawningSpeed;
@@ -28,9 +31,14 @@ public class GameManager : MonoBehaviour {
     [SerializeField]
     private int score;
     public int Score{get{return score;} set{score = value;}}
+
     [SerializeField]
     private int lives;
     public int Lives{get{return lives;} set{score = lives;}}
+
+    [SerializeField]
+    private PlayerStates playerState;
+    public PlayerStates PlayerState{get{return playerState;}set{playerState = value;}}
 
     private bool checkFlash;
     private float flashTimer;
@@ -39,13 +47,21 @@ public class GameManager : MonoBehaviour {
 
     public SpriteRenderer hitSignRenderer;
 
+    public GameObject gameoverPanel;
+    public Text readyCountDownText;
+    public Text currentScoreText;
+    public Text finalScoreText;
+    public Slider livesSlider;
+
     void Awake()
     {
         instance = this;
         score = 0;
         lives = 5;
+        playerState = PlayerStates.Dead;
         checkFlash = false;
         flashTimer = 0;
+        livesSlider.value = lives;
     }
 
 	// Use this for initialization
@@ -74,7 +90,8 @@ public class GameManager : MonoBehaviour {
 
     IEnumerator SpawnRandomObject()
     {
-        yield return new WaitForSeconds(waitForSpawn);
+        yield return StartCoroutine(CountDownReady());   //Wait for seconds -> start playing
+
         while(true)
         {
             objRandom = 1;
@@ -83,18 +100,42 @@ public class GameManager : MonoBehaviour {
             yield return new WaitForSeconds(spawningSpeed); 
         }
     }
+        
+    IEnumerator CountDownReady()
+    {
+        readyCountDownText.gameObject.SetActive(true);
+        for(int i = waitForSpawn; i>0; i--)
+        {
+            readyCountDownText.text = i.ToString();
+            yield return new WaitForSeconds(1);
+        }
+        readyCountDownText.text = "Start!";
+        yield return new WaitForSeconds(0.5f);
+        readyCountDownText.gameObject.SetActive(false);
+        playerState=  PlayerStates.Alive;
+    }
 
     public void InstantiateObject(int type,Vector2 pos)
     {
-        GameObject obj = Instantiate(objects[type], pos, Quaternion.identity) as GameObject;
+        Instantiate(objects[type], pos, Quaternion.identity);
     }
 
+    public void AddScore()
+    {
+        score += 1;
+        currentScoreText.text = score.ToString();
+    }
 
     public void Behit()
     {
         lives -= 1;
+        livesSlider.value = lives;
         if(lives==0)
-            print("d");
+        {
+            playerState = PlayerStates.Dead;
+            finalScoreText.text = score.ToString();
+            gameoverPanel.SetActive(true);
+        }
 
         hitSignRenderer.enabled = false; //reset renderer to cause flase, no matter it is flashing red or not.
         hitSignRenderer.enabled = true;

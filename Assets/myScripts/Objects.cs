@@ -44,7 +44,7 @@ public class Objects : MonoBehaviour {
     void DetermineDestroy()
     {
         if(asteriod == Asteriods.normal)
-            GameManager.GetInstance.Score += 1;
+            GameManager.GetInstance.AddScore();
         else if(asteriod == Asteriods.super)
         {
             for(int i=0; i<2; i++)
