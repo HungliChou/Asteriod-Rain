@@ -19,13 +19,18 @@ public class Objects : MonoBehaviour {
         speed = 0.6f;
     }
 
+    void Start()
+    {
+        
+    }
+
 	// Update is called once per frame
 	void Update () {
         myTransform.position -= new Vector3(0,speed,0);
         posY -= speed;
         if(posY<-5)
         {
-            GameManager.GetInstance.Lives -= 1;
+            GameManager.GetInstance.Behit();
             Destroy(gameObject);
         }
 	}

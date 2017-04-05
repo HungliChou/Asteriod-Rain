@@ -32,11 +32,20 @@ public class GameManager : MonoBehaviour {
     private int lives;
     public int Lives{get{return lives;} set{score = lives;}}
 
+    private bool checkFlash;
+    private float flashTimer;
+    public float flashTimeValue;
+
+
+    public SpriteRenderer hitSignRenderer;
+
     void Awake()
     {
         instance = this;
         score = 0;
         lives = 5;
+        checkFlash = false;
+        flashTimer = 0;
     }
 
 	// Use this for initialization
@@ -46,9 +55,22 @@ public class GameManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+        if(checkFlash)
+            CheckFlashTimer();
 	}
 
+    void CheckFlashTimer()
+    {
+        if(flashTimer>0)
+        {
+            flashTimer -= Time.deltaTime;
+        }
+        else
+        {
+            flashTimer = 0;
+            hitSignRenderer.enabled = false;
+        }
+    }
 
     IEnumerator SpawnRandomObject()
     {
@@ -66,5 +88,17 @@ public class GameManager : MonoBehaviour {
     {
         GameObject obj = Instantiate(objects[type], pos, Quaternion.identity) as GameObject;
     }
-        
+
+
+    public void Behit()
+    {
+        lives -= 1;
+        if(lives==0)
+            print("d");
+
+        hitSignRenderer.enabled = false; //reset renderer to cause flase, no matter it is flashing red or not.
+        hitSignRenderer.enabled = true;
+        checkFlash = true;
+        flashTimer = flashTimeValue;
+    }
 }
