@@ -28,6 +28,9 @@ public class GameManager : MonoBehaviour {
     //speed of spawing objects
     public float spawningSpeed;
 
+    private float clockTimer;
+    private int clockTimer_int;
+
     [SerializeField]
     private int score;
     public int Score{get{return score;} set{score = value;}}
@@ -52,10 +55,13 @@ public class GameManager : MonoBehaviour {
     public Text currentScoreText;
     public Text finalScoreText;
     public Slider livesSlider;
+    public Text clockText;
+    public RectTransform clockTick;
 
     void Awake()
     {
         instance = this;
+        clockTimer = 60;
         score = 0;
         lives = 5;
         playerState = PlayerStates.Dead;
@@ -71,9 +77,29 @@ public class GameManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if(checkFlash)
-            CheckFlashTimer();
+        if(playerState==PlayerStates.Alive)
+        {
+            CheckClockTimer();
+
+            if(checkFlash)
+                CheckFlashTimer();
+        }
 	}
+
+    void CheckClockTimer()
+    {
+        if(clockTimer>0)
+        {
+            clockTimer -= Time.deltaTime;
+            clockTimer_int = Mathf.FloorToInt(clockTimer);
+            clockText.text = clockTimer_int.ToString();
+            clockTick.rotation = Quaternion.Euler(0,0,-(60-clockTimer_int)*360/60);
+        }
+        else
+        {
+            GameOver();
+        }
+    }
 
     void CheckFlashTimer()
     {
@@ -132,14 +158,19 @@ public class GameManager : MonoBehaviour {
         livesSlider.value = lives;
         if(lives==0)
         {
-            playerState = PlayerStates.Dead;
-            finalScoreText.text = score.ToString();
-            gameoverPanel.SetActive(true);
+            GameOver();   
         }
 
         hitSignRenderer.enabled = false; //reset renderer to cause flase, no matter it is flashing red or not.
         hitSignRenderer.enabled = true;
         checkFlash = true;
         flashTimer = flashTimeValue;
+    }
+
+    void GameOver()
+    {
+        playerState = PlayerStates.Dead;
+        finalScoreText.text = score.ToString();
+        gameoverPanel.SetActive(true);
     }
 }
