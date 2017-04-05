@@ -19,7 +19,10 @@ public class MovingBackGround : MonoBehaviour {
 
 	// Update is called once per frame
     void Update () {
-        offSet = offSet+movingSpeed;
-        myMat.SetTextureOffset("_MainTex",new Vector2(offSet,0));
+        if(GameManager.GetInstance.PlayerState==PlayerStates.Alive)
+        {
+            offSet = offSet+movingSpeed;
+            myMat.SetTextureOffset("_MainTex",new Vector2(offSet,0));
+        }
 	}
 }

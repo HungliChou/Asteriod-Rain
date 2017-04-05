@@ -16,6 +16,8 @@ public class GameManager : MonoBehaviour {
     //Lists of prefabs
     public List<GameObject> objects = new List<GameObject>();
 
+    public List<GameObject> objects_spawned = new List<GameObject>();
+
     //random kind of the asteriod
     int objRandom;
 
@@ -30,6 +32,8 @@ public class GameManager : MonoBehaviour {
 
     private float clockTimer;
     private int clockTimer_int;
+
+    private Coroutine SpawnCoroutine;
 
     [SerializeField]
     private int score;
@@ -47,7 +51,6 @@ public class GameManager : MonoBehaviour {
     private float flashTimer;
     public float flashTimeValue;
 
-
     public SpriteRenderer hitSignRenderer;
 
     public GameObject gameoverPanel;
@@ -61,18 +64,11 @@ public class GameManager : MonoBehaviour {
     void Awake()
     {
         instance = this;
-        clockTimer = 60;
-        score = 0;
-        lives = 5;
-        playerState = PlayerStates.Dead;
-        checkFlash = false;
-        flashTimer = 0;
-        livesSlider.value = lives;
     }
 
 	// Use this for initialization
 	void Start () {
-        StartCoroutine(SpawnRandomObject());
+        RestartGame();
 	}
 	
 	// Update is called once per frame
@@ -143,7 +139,14 @@ public class GameManager : MonoBehaviour {
 
     public void InstantiateObject(int type,Vector2 pos)
     {
-        Instantiate(objects[type], pos, Quaternion.identity);
+        GameObject obj = Instantiate(objects[type], pos, Quaternion.identity) as GameObject;
+        objects_spawned.Add(obj);
+    }
+
+    public void DestroyObject(GameObject obj)
+    {
+        objects_spawned.Remove(obj);
+        Destroy(obj);
     }
 
     public void AddScore()
@@ -169,8 +172,46 @@ public class GameManager : MonoBehaviour {
 
     void GameOver()
     {
+        StopCoroutine(SpawnCoroutine);
         playerState = PlayerStates.Dead;
         finalScoreText.text = score.ToString();
         gameoverPanel.SetActive(true);
+    }
+
+    public void RestartGame()
+    {
+        //UI panel reset
+        gameoverPanel.SetActive(false);
+
+        //Clock reset
+        clockTimer = 60;
+        clockText.text = clockTimer.ToString();
+        clockTick.rotation = Quaternion.Euler(0,0,0);
+
+        //Score reset
+        score = 0;
+        currentScoreText.text = score.ToString();
+
+        //Lives reset
+        lives = 5;
+        livesSlider.value = lives;
+
+        //PlayerState reset
+        playerState = PlayerStates.Dead;
+
+        //Flash timer reset
+        checkFlash = false;
+        flashTimer = 0;
+        hitSignRenderer.enabled = false;
+
+        //Clear all objects
+        for(int i=0;i<objects_spawned.Count;i++)
+        {
+            Destroy(objects_spawned[i]);
+        }
+        objects_spawned.Clear();
+
+        //Start spawning coroutine
+        SpawnCoroutine = StartCoroutine(SpawnRandomObject());
     }
 }

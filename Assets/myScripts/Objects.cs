@@ -16,7 +16,7 @@ public class Objects : MonoBehaviour {
     {
         myTransform = transform;
         posY = myTransform.position.y;
-        speed = 0.6f;
+        speed = Random.Range(0.6f, 0.7f);
     }
 
     void Start()
@@ -31,14 +31,19 @@ public class Objects : MonoBehaviour {
         if(posY<-5)
         {
             GameManager.GetInstance.Behit();
-            Destroy(gameObject);
+            DestroyMyself();
         }
 	}
 
     void OnMouseDown()
     {       
         DetermineDestroy();
-        Destroy(gameObject);
+        DestroyMyself();
+    }
+
+    void DestroyMyself()
+    {
+        GameManager.GetInstance.DestroyObject(gameObject);
     }
 
     void DetermineDestroy()
