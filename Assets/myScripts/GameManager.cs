@@ -32,6 +32,7 @@ public class GameManager : MonoBehaviour {
     public float spawningSpeed;
     public float difficulty;
 
+    private const float originalClockTimer = 60;
     private float clockTimer;
     private int clockTimer_int;
 
@@ -43,6 +44,7 @@ public class GameManager : MonoBehaviour {
 
     [SerializeField]
     private int lives;
+    private const int originalLives = 5;
     public int Lives{get{return lives;} set{score = lives;}}
 
     [SerializeField]
@@ -63,6 +65,7 @@ public class GameManager : MonoBehaviour {
     public Slider livesSlider;
     public Text clockText;
     public RectTransform clockTick;
+    public GameObject signPrefab;
 
     void Awake()
     {
@@ -72,7 +75,7 @@ public class GameManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        RestartGame();
+        Initialize();
 	}
 	
 	// Update is called once per frame
@@ -167,6 +170,30 @@ public class GameManager : MonoBehaviour {
     {
         score += 1;
         currentScoreText.text = score.ToString();
+        if(score%10==0)
+        {
+            AddHealth();
+        }
+    }
+
+    IEnumerator ScoreAnimation()
+    {
+        currentScoreText.fontSize = 30;
+        yield return new WaitForSeconds(2);
+        currentScoreText.fontSize = 15;
+    }
+
+    void AddHealth()
+    {
+        if(lives<originalLives)
+        {
+            lives += 1;
+            SoundManager.GetInstance.PlaySingle(AudioSources.UI,SoundManager.GetInstance.RecoverySound);
+            UpdateLives();
+            GameObject sign = Instantiate(GameManager.GetInstance.signPrefab,transform.position,Quaternion.identity) as GameObject;
+            sign.transform.SetParent(GameObject.Find("Canvas").transform, false);
+        }
+        StartCoroutine(ScoreAnimation());
     }
 
     public void Behit()
@@ -177,11 +204,7 @@ public class GameManager : MonoBehaviour {
         SoundManager.GetInstance.PlaySingle(AudioSources.Hit, SoundManager.GetInstance.hitSound);
 
         lives -= 1;
-        livesSlider.value = lives;
-        if(lives==0)
-        {
-            GameOver(false);   
-        }
+        UpdateLives();
 
         hitSignRenderer.enabled = false; //reset renderer to cause flase, no matter it is flashing red or not.
         hitSignRenderer.enabled = true;
@@ -189,15 +212,31 @@ public class GameManager : MonoBehaviour {
         flashTimer = flashTimeValue;
     }
 
+    void UpdateLives()
+    {
+        livesSlider.value = lives;
+        if(lives==0)
+        {
+            GameOver(false);   
+        }
+    }
+
+
     void GameOver(bool pass)
     {
         StopCoroutine(SpawnCoroutine);
         playerState = PlayerStates.Dead;
         finalScoreText.text = score.ToString();
         if(pass)
+        {
+            SoundManager.GetInstance.PlaySingle(AudioSources.UI,SoundManager.GetInstance.VictorySound);
             finalResultText.text = "Congratulations!";
+        }
         else
+        {
+            SoundManager.GetInstance.PlaySingle(AudioSources.UI,SoundManager.GetInstance.LoseSound);
             finalResultText.text = "Game Over";
+        }
         gameoverPanel.SetActive(true);
     }
 
@@ -206,11 +245,17 @@ public class GameManager : MonoBehaviour {
         //Play sound
         SoundManager.GetInstance.PlaySingle(AudioSources.UI, SoundManager.GetInstance.startSound);
 
+        //Initialize variables and UI
+        Initialize();
+    }
+
+    void Initialize()
+    {
         //UI panel reset
         gameoverPanel.SetActive(false);
 
         //Clock reset
-        clockTimer = 60;
+        clockTimer = originalClockTimer;
         clockText.text = clockTimer.ToString();
         clockTick.rotation = Quaternion.Euler(0,0,0);
 
@@ -222,7 +267,7 @@ public class GameManager : MonoBehaviour {
         currentScoreText.text = score.ToString();
 
         //Lives reset
-        lives = 5;
+        lives = originalLives;
         livesSlider.value = lives;
 
         //PlayerState reset
