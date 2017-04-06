@@ -14,17 +14,19 @@ public class Objects : MonoBehaviour {
     private Transform myTransform;
     private float posY;
     private float speed;
+    private float maxPosX;  //this value is used to prevent the asteriod out of screen.
 
     void Awake()
     {
         myTransform = transform;
         posY = myTransform.position.y;
-        speed = Random.Range(0.3f, 0.7f);
+
     }
 
     void Start()
     {
-        
+        maxPosX = GameManager.GetInstance.objSpawnPos.x;
+        speed = Random.Range(0.3f, 0.7f);
     }
 
 	// Update is called once per frame
@@ -59,9 +61,20 @@ public class Objects : MonoBehaviour {
         {
             for(int i=0; i<2; i++)
             {
-                Vector2 spawnPos = new Vector2((myTransform.position.x + i*Random.Range(5,10)), (posY + i*Random.Range(5,10)));
+                Vector2 spawnPos = new Vector2(GetPosX(i), (posY + i*Random.Range(5,10)));
                 GameManager.GetInstance.InstantiateObject((int)Asteriods.normal,spawnPos);
             }
         }
+    }
+
+    float GetPosX(int i)
+    {
+        float offset = i*Random.Range(5,10);
+        float posX = myTransform.position.x + offset;
+
+        if(posX > maxPosX)
+            return myTransform.position.x - offset;
+        else
+            return posX;
     }
 }

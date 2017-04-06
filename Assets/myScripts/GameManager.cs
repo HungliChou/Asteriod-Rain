@@ -25,10 +25,12 @@ public class GameManager : MonoBehaviour {
     public Vector2 objSpawnPos;
 
     //wait seconds before spwaning objects
-    public int waitForSpawn;
+    public int waitForStart;
 
     //speed of spawing objects
+    private const float originalSpawningSpeed = 1;
     public float spawningSpeed;
+    public float difficulty;
 
     private float clockTimer;
     private int clockTimer_int;
@@ -81,8 +83,17 @@ public class GameManager : MonoBehaviour {
 
             if(checkFlash)
                 CheckFlashTimer();
+
+            LinearDiffulty();
         }
 	}
+
+    void LinearDiffulty()
+    {
+        //spawn asteriods more frequently
+        difficulty += 0.0002f;
+        spawningSpeed = originalSpawningSpeed/difficulty;
+    }
 
     void CheckClockTimer()
     {
@@ -95,6 +106,7 @@ public class GameManager : MonoBehaviour {
         }
         else
         {
+            clockText.text = "0";
             GameOver(true);
         }
     }
@@ -118,7 +130,7 @@ public class GameManager : MonoBehaviour {
 
         while(true)
         {
-            objRandom = 1;
+            objRandom = Random.Range(0,2);
             Vector2 spawnPos = new Vector2(Random.Range(-objSpawnPos.x, objSpawnPos.x), objSpawnPos.y);
             InstantiateObject(objRandom, spawnPos);
             yield return new WaitForSeconds(spawningSpeed); 
@@ -128,7 +140,7 @@ public class GameManager : MonoBehaviour {
     IEnumerator CountDownReady()
     {
         readyCountDownText.gameObject.SetActive(true);
-        for(int i = waitForSpawn; i>0; i--)
+        for(int i = waitForStart; i>0; i--)
         {
             readyCountDownText.text = i.ToString();
             yield return new WaitForSeconds(1);
@@ -201,6 +213,9 @@ public class GameManager : MonoBehaviour {
         clockTimer = 60;
         clockText.text = clockTimer.ToString();
         clockTick.rotation = Quaternion.Euler(0,0,0);
+
+        //Difficulty reset
+        difficulty = 1;
 
         //Score reset
         score = 0;
