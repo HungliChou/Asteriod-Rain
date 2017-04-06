@@ -19,7 +19,7 @@ public class Objects : MonoBehaviour {
     {
         myTransform = transform;
         posY = myTransform.position.y;
-        speed = Random.Range(0.6f, 0.7f);
+        speed = Random.Range(0.3f, 0.7f);
     }
 
     void Start()
@@ -59,7 +59,7 @@ public class Objects : MonoBehaviour {
         {
             for(int i=0; i<2; i++)
             {
-                Vector2 spawnPos = new Vector2((myTransform.position.x + i*5), (posY + i*5));
+                Vector2 spawnPos = new Vector2((myTransform.position.x + i*Random.Range(5,10)), (posY + i*Random.Range(5,10)));
                 GameManager.GetInstance.InstantiateObject((int)Asteriods.normal,spawnPos);
             }
         }
