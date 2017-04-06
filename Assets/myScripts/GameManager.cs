@@ -57,6 +57,7 @@ public class GameManager : MonoBehaviour {
     public Text readyCountDownText;
     public Text currentScoreText;
     public Text finalScoreText;
+    public Text finalResultText;
     public Slider livesSlider;
     public Text clockText;
     public RectTransform clockTick;
@@ -64,6 +65,7 @@ public class GameManager : MonoBehaviour {
     void Awake()
     {
         instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
 	// Use this for initialization
@@ -93,7 +95,7 @@ public class GameManager : MonoBehaviour {
         }
         else
         {
-            GameOver();
+            GameOver(true);
         }
     }
 
@@ -157,11 +159,16 @@ public class GameManager : MonoBehaviour {
 
     public void Behit()
     {
+        if(playerState==PlayerStates.Dead)
+            return;
+        
+        SoundManager.GetInstance.PlaySingle(AudioSources.Hit, SoundManager.GetInstance.hitSound);
+
         lives -= 1;
         livesSlider.value = lives;
         if(lives==0)
         {
-            GameOver();   
+            GameOver(false);   
         }
 
         hitSignRenderer.enabled = false; //reset renderer to cause flase, no matter it is flashing red or not.
@@ -170,16 +177,23 @@ public class GameManager : MonoBehaviour {
         flashTimer = flashTimeValue;
     }
 
-    void GameOver()
+    void GameOver(bool pass)
     {
         StopCoroutine(SpawnCoroutine);
         playerState = PlayerStates.Dead;
         finalScoreText.text = score.ToString();
+        if(pass)
+            finalResultText.text = "Congratulations!";
+        else
+            finalResultText.text = "Game Over";
         gameoverPanel.SetActive(true);
     }
 
     public void RestartGame()
     {
+        //Play sound
+        SoundManager.GetInstance.PlaySingle(AudioSources.UI, SoundManager.GetInstance.startSound);
+
         //UI panel reset
         gameoverPanel.SetActive(false);
 

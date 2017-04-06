@@ -8,9 +8,12 @@ public enum Asteriods{
 public class Objects : MonoBehaviour {
 
     public Asteriods asteriod;
-    Transform myTransform;
-    float posY;
-    float speed;
+    public GameObject explosionPrefab;
+    public AudioClip ExplosionSound;
+
+    private Transform myTransform;
+    private float posY;
+    private float speed;
 
     void Awake()
     {
@@ -37,6 +40,8 @@ public class Objects : MonoBehaviour {
 
     void OnMouseDown()
     {       
+        SoundManager.GetInstance.PlaySingle(AudioSources.Expolsion, ExplosionSound);
+        Instantiate(explosionPrefab, myTransform.position, Quaternion.identity);
         DetermineDestroy();
         DestroyMyself();
     }
