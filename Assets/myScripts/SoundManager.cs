@@ -5,7 +5,6 @@ public enum AudioSources{Expolsion, Hit, UI};
 
 public class SoundManager : MonoBehaviour {
 
-
     private static SoundManager instance;                           //Singleton private instance
     public static SoundManager GetInstance{get{return instance;}}   //Singleton instance getter
 

@@ -3,10 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 
 public class Sign : MonoBehaviour {
-
-    void Start()
-    {}
-
+    
     public void FinishAnimation()
     {
         Destroy(gameObject);

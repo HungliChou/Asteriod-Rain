@@ -7,7 +7,6 @@ public enum PlayerStates{Alive, Dead};
 
 public class GameManager : MonoBehaviour {
 
-
     private static GameManager instance;                                //Singleton private instance
     public static GameManager GetInstance{get{return instance;}}        //Singleton instance getter
 
