@@ -148,6 +148,7 @@ public class GameManager : MonoBehaviour {
             yield return new WaitForSeconds(3);
             titleShowed = true;
         }
+        SoundManager.GetInstance.PlayBG();
         readyCountDownText.gameObject.SetActive(true);
         for(int i = waitForStart; i>0; i--)
         {

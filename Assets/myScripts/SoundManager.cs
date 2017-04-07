@@ -9,6 +9,7 @@ public class SoundManager : MonoBehaviour {
     public static SoundManager GetInstance{get{return instance;}}   //Singleton instance getter
 
     #region Audio sources
+    public AudioSource backgroundSource;                            //Audio source for BG music
     public AudioSource explosionSource;                             //Audio source for explosion
     public AudioSource hitSource;                                   //Audio source for being hit by asteriods
     public AudioSource uiSource;                                    //Audio source for UI
@@ -26,6 +27,11 @@ public class SoundManager : MonoBehaviour {
     {
         instance = this;
         DontDestroyOnLoad(gameObject);
+    }
+
+    public void PlayBG()
+    {
+        backgroundSource.Play();
     }
 
     public void PlaySingle(AudioSources source ,AudioClip clip)
