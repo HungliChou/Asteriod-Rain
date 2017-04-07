@@ -51,6 +51,7 @@ public class GameManager : MonoBehaviour {
     #endregion
 
     #region UI 
+    private bool titleShowed;                                           //Boolean for checking if showed title already
     public GameObject gameoverPanel;                                    //Panel reference can be activate when the game is over 
     public Text readyCountDownText;                                     //Text reference for ready countdown
     public Text currentScoreText;                                       //Text reference for current score
@@ -66,6 +67,7 @@ public class GameManager : MonoBehaviour {
     {
         instance = this;
         DontDestroyOnLoad(gameObject);
+        titleShowed = false;
     }
         
 	void Start () {
@@ -141,6 +143,11 @@ public class GameManager : MonoBehaviour {
 
     IEnumerator CountDownReady()
     {
+        if(!titleShowed)
+        {
+            yield return new WaitForSeconds(3);
+            titleShowed = true;
+        }
         readyCountDownText.gameObject.SetActive(true);
         for(int i = waitForStart; i>0; i--)
         {
