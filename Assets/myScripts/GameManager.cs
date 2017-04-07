@@ -178,9 +178,11 @@ public class GameManager : MonoBehaviour {
 
     IEnumerator ScoreAnimation()
     {
-        currentScoreText.fontSize = 30;
-        yield return new WaitForSeconds(2);
-        currentScoreText.fontSize = 15;
+        currentScoreText.fontSize = 40;
+        currentScoreText.color = Color.white;
+        yield return new WaitForSeconds(1.5f);
+        currentScoreText.fontSize = 25;
+        currentScoreText.color = new Color32(23,23,23,255);
     }
 
     void AddHealth()
