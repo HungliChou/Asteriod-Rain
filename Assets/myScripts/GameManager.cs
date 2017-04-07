@@ -7,78 +7,72 @@ public enum PlayerStates{Alive, Dead};
 
 public class GameManager : MonoBehaviour {
 
-    //Singleton private instance
-    private static GameManager instance;
-   
-    //Singleton instance getter
-    public static GameManager GetInstance{get{return instance;}}
 
-    //Lists of prefabs
-    public List<GameObject> objects = new List<GameObject>();
+    private static GameManager instance;                                //Singleton private instance
+    public static GameManager GetInstance{get{return instance;}}        //Singleton instance getter
 
-    public List<GameObject> objects_spawned = new List<GameObject>();
+    #region Spawning
+    public List<GameObject> objects = new List<GameObject>();           //List of object prefabs
+    public List<GameObject> objects_spawned = new List<GameObject>();   //List of spawned onjects
+    public int waitForStart;                                            //Wait seconds before spwaning objects
+    private Coroutine SpawnCoroutine;                                   //Globle variable of spawning coroutine   
+    private int objRandom;                                              //Globle variable of random asteriod
+    public Vector2 objSpawnPos;                                         //Spawning position of asteriods
+    private const float originalSpawningSpeed = 1;                      //Speed of spawing objects (original)
+    public float spawningSpeed;                                         //Speed of spawing objects (variable)
+    public float difficulty;                                            //Difficulty: affect the speed of spawning
+    #endregion
 
-    //random kind of the asteriod
-    int objRandom;
+    #region Clock
+    private const float originalClockTimer = 60;                        //Timer (original)
+    private float clockTimer;                                           //Timer (current)
+    private int clockTimer_int;                                         //Globle variable of timer in "Interger"
+    #endregion
 
-    //spawning position of asteriods
-    public Vector2 objSpawnPos;
+    #region Flash screen 
+    private bool checkFlash;                                            //Flash screen boolean: To prevent from checking flash in Update() all the time.
+    private float flashTimer;                                           //Flash screen timer
+    public float flashTimeValue;                                        //Flash screen duration (Default is 1 second)  
+    public SpriteRenderer hitSignRenderer;                              //Red sprite renderer can be enable and disable to create flash
+    #endregion
 
-    //wait seconds before spwaning objects
-    public int waitForStart;
-
-    //speed of spawing objects
-    private const float originalSpawningSpeed = 1;
-    public float spawningSpeed;
-    public float difficulty;
-
-    private const float originalClockTimer = 60;
-    private float clockTimer;
-    private int clockTimer_int;
-
-    private Coroutine SpawnCoroutine;
+    #region Data
+    [SerializeField]
+    private int score;                                                  //Private variable of game score
+    public int Score{get{return score;} set{score = value;}}            //Game score Getter and Setter
 
     [SerializeField]
-    private int score;
-    public int Score{get{return score;} set{score = value;}}
+    private int lives;                                                  //Private variable of lives
+    private const int originalLives = 5;                                //Lives (original)
+    public int Lives{get{return lives;} set{score = lives;}}            //Lives Getter and Setter
 
     [SerializeField]
-    private int lives;
-    private const int originalLives = 5;
-    public int Lives{get{return lives;} set{score = lives;}}
+    private PlayerStates playerState;                                   //Prviate variable of current state (Alive,Dead)
+    public PlayerStates PlayerState{get{return playerState;} set{playerState = value;}}  //Current state Getter and Setter
+    #endregion
 
-    [SerializeField]
-    private PlayerStates playerState;
-    public PlayerStates PlayerState{get{return playerState;}set{playerState = value;}}
-
-    private bool checkFlash;
-    private float flashTimer;
-    public float flashTimeValue;
-
-    public SpriteRenderer hitSignRenderer;
-
-    public GameObject gameoverPanel;
-    public Text readyCountDownText;
-    public Text currentScoreText;
-    public Text finalScoreText;
-    public Text finalResultText;
-    public Slider livesSlider;
-    public Text clockText;
-    public RectTransform clockTick;
-    public GameObject signPrefab;
+    #region UI 
+    public GameObject gameoverPanel;                                    //Panel reference can be activate when the game is over 
+    public Text readyCountDownText;                                     //Text reference for ready countdown
+    public Text currentScoreText;                                       //Text reference for current score
+    public Text finalScoreText;                                         //Text reference for final score
+    public Text finalResultText;                                        //Text reference for final result (Congratulations/GameOver)
+    public Slider livesSlider;                                          //slider reference for current lives
+    public Text clockText;                                              //Text reference for clock
+    public RectTransform clockTick;                                     //Transform reference for clock tick sprite
+    public GameObject signPrefab;                                       //Prefab reference for sign (lives +1)
+    #endregion
 
     void Awake()
     {
         instance = this;
         DontDestroyOnLoad(gameObject);
     }
-
-	// Use this for initialization
+        
 	void Start () {
         Initialize();
 	}
 	
-	// Update is called once per frame
 	void Update () {
         if(playerState==PlayerStates.Alive)
         {
@@ -140,6 +134,12 @@ public class GameManager : MonoBehaviour {
         }
     }
         
+    public void InstantiateObject(int type,Vector2 pos)
+    {
+        GameObject obj = Instantiate(objects[type], pos, Quaternion.identity) as GameObject;
+        objects_spawned.Add(obj);
+    }
+
     IEnumerator CountDownReady()
     {
         readyCountDownText.gameObject.SetActive(true);
@@ -153,13 +153,7 @@ public class GameManager : MonoBehaviour {
         readyCountDownText.gameObject.SetActive(false);
         playerState=  PlayerStates.Alive;
     }
-
-    public void InstantiateObject(int type,Vector2 pos)
-    {
-        GameObject obj = Instantiate(objects[type], pos, Quaternion.identity) as GameObject;
-        objects_spawned.Add(obj);
-    }
-
+        
     public void DestroyObject(GameObject obj)
     {
         objects_spawned.Remove(obj);

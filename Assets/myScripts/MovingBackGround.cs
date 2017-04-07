@@ -3,17 +3,12 @@ using System.Collections;
 
 public class MovingBackGround : MonoBehaviour {
 
-    private Material myMat; 
-    private float offSet;
-    public float movingSpeed;
+    private Material myMat;                     //Background: material
+    private float offSet;                       //Background: offset
+    private const float movingSpeed = 0.003f;   //Background: moving spead
 
     void Awake(){
         myMat = GetComponent<Renderer>().material;
-    }
-	
-    void Start()
-    {
-        movingSpeed = 0.003f;
         offSet = myMat.GetTextureOffset("_MainTex").x;
     }
 

@@ -5,21 +5,23 @@ public enum AudioSources{Expolsion, Hit, UI};
 
 public class SoundManager : MonoBehaviour {
 
-    //Singleton private instance
-    private static SoundManager instance;
 
-    //Singleton instance getter
-    public static SoundManager GetInstance{get{return instance;}}
+    private static SoundManager instance;                           //Singleton private instance
+    public static SoundManager GetInstance{get{return instance;}}   //Singleton instance getter
 
-    public AudioSource explosionSource;     
-    public AudioSource hitSource;
-    public AudioSource uiSource;
+    #region Audio sources
+    public AudioSource explosionSource;                             //Audio source for explosion
+    public AudioSource hitSource;                                   //Audio source for being hit by asteriods
+    public AudioSource uiSource;                                    //Audio source for UI
+    #endregion
 
-    public AudioClip hitSound;
-    public AudioClip startSound;
-    public AudioClip VictorySound;
-    public AudioClip LoseSound;
-    public AudioClip RecoverySound;
+    #region Audio clips
+    public AudioClip hitSound;                                      //Audio clip of being hit by asteriods
+    public AudioClip startSound;                                    //Audio clip of game start
+    public AudioClip VictorySound;                                  //Audio clip of victory
+    public AudioClip LoseSound;                                     //Audio clip of game lost
+    public AudioClip RecoverySound;                                 //Audio clip of recovery lives
+    #endregion
 
     void Awake()
     {
