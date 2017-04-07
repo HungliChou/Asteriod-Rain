@@ -164,7 +164,7 @@ public class GameManager : MonoBehaviour {
     {
         score += 1;
         currentScoreText.text = score.ToString();
-        if(score%10==0)
+        if(score%20==0)
         {
             AddHealth();
         }
